@@ -49,8 +49,43 @@ class Task{
     private String name;
     private String description;
     private String status;
-    private LocalDate duDate;
+    private LocalDate dueDate;
 
+
+    public Task() {
+        this.name = "";
+        this.description = "";
+        this.status = "none";
+        this.dueDate = null;
+        }
+
+    public Task(String name){
+        this.name = name;
+        this.description = "";
+        this.status = "none";
+        this.dueDate = null;
+    }
+
+    public Task(String name, String description){
+        this.name = name;
+        this.description = description;
+        this.status = "none";
+        this.dueDate = null;
+    }
+
+    public Task(String name, String description, String status){
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.dueDate = null;
+    }
+
+    public Task(String name, String description, String status, LocalDate date){
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.dueDate = date;
+    }
 
     public String getName() {
         return this.name;
