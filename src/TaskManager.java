@@ -1,18 +1,18 @@
 package src;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TaskManager {
+    private static ArrayList<Task> taskList = new ArrayList<>();
+    static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        ArrayList<Task> taskList = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
         while (true) { 
             showMenu();
             int choice = scanner.nextInt();
             scanner.nextLine();
-            menu(choice);
-            break;   
+            menu(choice); 
         }
     }
 
@@ -27,21 +27,79 @@ public class TaskManager {
             case 3: editTask(); break;
             case 4: showAllTask(); break;
             case 5: System.out.println("Выход из программы"); break;
-            default: System.out.println("Вы ввели некорректное значение. Попробуйте снова");
+            default: System.out.println("Вы ввели некорректное значение. Попробуйте снова\n");
         }
     }
 
     private static void addTask(){
         System.out.println("Добавление задачи");
+        String name;
+        String description;
+        String status;
+        LocalDate dueDate = null;
+
+        System.out.print("Введите название задачи: ");
+        name = scanner.nextLine();
+
+        System.out.print("Введите описание задачи: ");
+        description = scanner.nextLine();
+
+        System.out.print("Введите статус задачи: ");
+        status = scanner.nextLine();
+
+        System.out.print("Пожалуйста, используйте формат yyyy-MM-dd\nВведите дедлайн задачи: ");
+        while (dueDate == null) {
+        System.out.print("Введите дедлайн задачи (формат yyyy-MM-dd): ");
+        String dateInput = scanner.nextLine();
+        try {
+                dueDate = LocalDate.parse(dateInput);
+        } catch (DateTimeParseException e) {
+            System.out.println("Некорректный формат даты. Пожалуйста, используйте формат yyyy-MM-dd.");
+        }
+        }
+                        
+            
+        Task task = new Task(name,description,status,dueDate);
+        taskList.add(task);
+
+        
     }
     private static void removeTask(){
         System.out.println("Удаление задачи");
+        showAllTask();
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        if (choice > 0 && choice <= taskList.size()) {
+            taskList.remove(choice - 1);  
+            System.out.println("Задача была успешно удалена");
+        } else {
+            System.out.println("Удалить не получилось. Попробуйте снова");
+        }
+        
+        
     }
     private static void editTask(){
-        System.out.println("Изменение задачи");
+        System.out.println("Изменение задачи\nВыберите из списка задачу, которую хотите изменить");
+        showAllTask();
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        // ДОДЕЛАТЬ ЧЕРЕЗ СВИЧ КЕЙС ВЫБОР ЧТО БУДЕМ МЕНЯТЬ
+        
     }
-    private static void showAllTask(){
-        System.out.println("Показ задач");
+    private static void showAllTask() {
+        System.out.println("Список задач:");
+        System.out.printf("%-5s %-20s %-30s %-10s %-15s%n", "№", "Название", "Описание", "Статус", "Срок");
+        System.out.println("---------------------------------------------------------------------");
+    
+        for (int i = 1; i < taskList.size(); i++) {
+            Task task = taskList.get(i);
+            System.out.printf("%-5d %-20s %-30s %-10s %-15s%n",
+                    i,
+                    task.getName(),
+                    task.getDescription(),
+                    task.getStatus(),
+                    task.getDueDate());
+        }
     }
 }     
 
@@ -111,12 +169,23 @@ class Task{
         this.status = status;
     }
 
-    public LocalDate getDuDate() {
-        return this.duDate;
+    public LocalDate getDueDate() {
+        return this.dueDate;
     }
 
-    public void setDuDate(LocalDate duDate) {
-        this.duDate = duDate;
+    public void setDueDate(LocalDate duDate) {
+        this.dueDate = duDate;
     }
+
+
+    @Override
+    public String toString() {
+        return 
+            "name='" + getName() + "'" +
+            ", description='" + getDescription() + "'" +
+            ", status='" + getStatus() + "'" +
+            ", dueDate='" + getDueDate() + "'";
+    }
+
 
 }
