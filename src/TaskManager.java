@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class TaskManager {
     private static ArrayList<Task> taskList = new ArrayList<>();
     static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         while (true) { 
             showMenu();
@@ -25,9 +26,13 @@ public class TaskManager {
             case 1: addTask(); break;
             case 2: removeTask(); break;
             case 3: editTask(); break;
-            case 4: showAllTask(); break;
-            case 5: System.out.println("Выход из программы"); break;
-            default: System.out.println("Вы ввели некорректное значение. Попробуйте снова\n");
+            case 4: showAllTasks(); break;
+            case 5: 
+                System.out.println("Выход из программы");
+                System.exit(0);
+                break;
+            default: 
+                System.out.println("Вы ввели некорректное значение. Попробуйте снова\n");
         }
     }
 
@@ -49,52 +54,104 @@ public class TaskManager {
 
         System.out.print("Пожалуйста, используйте формат yyyy-MM-dd\nВведите дедлайн задачи: ");
         while (dueDate == null) {
-        System.out.print("Введите дедлайн задачи (формат yyyy-MM-dd): ");
-        String dateInput = scanner.nextLine();
-        try {
+            System.out.print("Введите дедлайн задачи (формат yyyy-MM-dd): ");
+            String dateInput = scanner.nextLine();
+            try {
                 dueDate = LocalDate.parse(dateInput);
-        } catch (DateTimeParseException e) {
-            System.out.println("Некорректный формат даты. Пожалуйста, используйте формат yyyy-MM-dd.");
-        }
+            } catch (DateTimeParseException e) {
+                System.out.println("Некорректный формат даты. Пожалуйста, используйте формат yyyy-MM-dd.");
+            }
         }
                         
-            
-        Task task = new Task(name,description,status,dueDate);
+        Task task = new Task(name, description, status, dueDate);
         taskList.add(task);
-
-        
+        System.out.println("Задача успешно добавлена.");
     }
+
     private static void removeTask(){
         System.out.println("Удаление задачи");
-        showAllTask();
-        int choice = scanner.nextInt();
+        showAllTasks();
+        System.out.print("Введите номер задачи для удаления: ");
+        int choice = scanner.nextInt() - 1;
         scanner.nextLine();
-        if (choice > 0 && choice <= taskList.size()) {
-            taskList.remove(choice - 1);  
-            System.out.println("Задача была успешно удалена");
+        if (choice >= 0 && choice < taskList.size()) {
+            taskList.remove(choice);  
+            System.out.println("Задача была успешно удалена.");
         } else {
-            System.out.println("Удалить не получилось. Попробуйте снова");
+            System.out.println("Удалить не получилось. Попробуйте снова.");
         }
-        
-        
     }
+
+    private static void showEdit(){
+        System.out.println("1 - Изменить имя задачи\n2 - Изменить описание задачи\n3 - Изменить статус задачи\n4 - Изменить дату задачи\n5 - Ничего не менять");
+    }
+
     private static void editTask(){
-        System.out.println("Изменение задачи\nВыберите из списка задачу, которую хотите изменить");
-        showAllTask();
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-        // ДОДЕЛАТЬ ЧЕРЕЗ СВИЧ КЕЙС ВЫБОР ЧТО БУДЕМ МЕНЯТЬ
-        
+        System.out.println("Изменение задачи\nВыберите из списка задачу, которую хотите изменить:");
+        showAllTasks();
+        System.out.print("Введите номер задачи для изменения: ");
+        int choice = scanner.nextInt() - 1;
+        if (choice >= 0 && choice < taskList.size()) {
+            Task task = taskList.get(choice);
+            scanner.nextLine();
+            showEdit();
+            System.out.print("Введите номер действия: ");
+            int editChoice = scanner.nextInt();
+            scanner.nextLine();
+            switch (editChoice) {
+                case 1:
+                    System.out.print("Введите новое имя задачи: ");
+                    String newName = scanner.nextLine();
+                    task.setName(newName);
+                    System.out.println("Имя задачи обновлено.");
+                    break;
+                case 2:
+                    System.out.print("Введите новое описание задачи: ");
+                    String newDescription = scanner.nextLine();
+                    task.setDescription(newDescription);
+                    System.out.println("Описание задачи обновлено.");
+                    break;
+                case 3:
+                    System.out.print("Введите новый статус задачи: ");
+                    String newStatus = scanner.nextLine();
+                    task.setStatus(newStatus);
+                    System.out.println("Статус задачи обновлен.");
+                    break;
+                case 4:
+                    LocalDate dueDate = null;
+                    while (dueDate == null) {
+                        System.out.print("Введите дедлайн задачи (формат yyyy-MM-dd): ");
+                        String dateInput = scanner.nextLine();
+                        try {
+                            dueDate = LocalDate.parse(dateInput);
+                            task.setDueDate(dueDate);
+                            System.out.println("Дата задачи обновлена.");
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Некорректный формат даты. Пожалуйста, используйте формат yyyy-MM-dd.");
+                        }
+                    }
+                    break;
+                case 5:
+                    System.out.println("Изменения не внесены.");
+                    break;
+                default:
+                    System.out.println("Некорректный выбор.");
+                    break;
+            }
+        } else {
+            System.out.println("Задача с таким номером не найдена.");
+        }
     }
-    private static void showAllTask() {
+    
+    private static void showAllTasks() {
         System.out.println("Список задач:");
         System.out.printf("%-5s %-20s %-30s %-10s %-15s%n", "№", "Название", "Описание", "Статус", "Срок");
         System.out.println("---------------------------------------------------------------------");
     
-        for (int i = 1; i < taskList.size(); i++) {
+        for (int i = 0; i < taskList.size(); i++) {
             Task task = taskList.get(i);
             System.out.printf("%-5d %-20s %-30s %-10s %-15s%n",
-                    i,
+                    i + 1,
                     task.getName(),
                     task.getDescription(),
                     task.getStatus(),
@@ -103,42 +160,13 @@ public class TaskManager {
     }
 }     
 
-class Task{
+class Task {
     private String name;
     private String description;
     private String status;
     private LocalDate dueDate;
 
-
-    public Task() {
-        this.name = "";
-        this.description = "";
-        this.status = "none";
-        this.dueDate = null;
-        }
-
-    public Task(String name){
-        this.name = name;
-        this.description = "";
-        this.status = "none";
-        this.dueDate = null;
-    }
-
-    public Task(String name, String description){
-        this.name = name;
-        this.description = description;
-        this.status = "none";
-        this.dueDate = null;
-    }
-
-    public Task(String name, String description, String status){
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.dueDate = null;
-    }
-
-    public Task(String name, String description, String status, LocalDate date){
+    public Task(String name, String description, String status, LocalDate date) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -173,19 +201,15 @@ class Task{
         return this.dueDate;
     }
 
-    public void setDueDate(LocalDate duDate) {
-        this.dueDate = duDate;
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
-
 
     @Override
     public String toString() {
-        return 
-            "name='" + getName() + "'" +
-            ", description='" + getDescription() + "'" +
-            ", status='" + getStatus() + "'" +
-            ", dueDate='" + getDueDate() + "'";
+        return "name='" + getName() + "'" +
+               ", description='" + getDescription() + "'" +
+               ", status='" + getStatus() + "'" +
+               ", dueDate='" + getDueDate() + "'";
     }
-
-
 }
